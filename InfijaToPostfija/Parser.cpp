@@ -177,7 +177,7 @@ bool Parser::isOperandComplete(char leftOperand, char rightOperand)
 
 	/* Returns true if the operand passed as parameter is opened and closed respectively */
 
-	auto counter = [](string _input, char operand) { // C++ 11
+	auto counter = [](string _input, char operand) { // C++ 11 CON C++14
 
 		int operand_counter = (int)nullptr; //C++ 11
 

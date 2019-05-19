@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-enum Priority
+enum struct Priority
 {
 	Highest = 4,  //
 	High = 3, // % * /

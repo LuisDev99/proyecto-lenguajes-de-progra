@@ -26,19 +26,19 @@ struct Token {
 		switch (_value) {
 
 		case '(': case '[' :
-			priority = Lowest;
+			priority = (int)Priority::Lowest;
 			break;
 
 		case '^':
-			priority = Highest;
+			priority = (int)Priority::Highest;
 			break;
 
 		case '*': case '/': case '%':
-			priority = High;
+			priority = (int)Priority::High;
 			break;
 
 		case '+': case '-':
-			priority = Low;
+			priority = (int)Priority::Low;
 			break;
 		}
 
@@ -81,7 +81,7 @@ public:
 	~InfixToPostFixConverter();
 
 
-	std::string getPostFixExpression();
+	std::string getPostFixExpression(); // c++14 -> old: std::string getPostFixExpression() {} en la definicion
 	std::string getPostFixResult();
 	std::string getErrorMessage();
 

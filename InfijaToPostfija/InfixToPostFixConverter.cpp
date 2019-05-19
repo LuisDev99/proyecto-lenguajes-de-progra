@@ -28,17 +28,17 @@ InfixToPostFixConverter::~InfixToPostFixConverter()
 {
 }
 
-std::string InfixToPostFixConverter::getPostFixExpression()
+string InfixToPostFixConverter::getPostFixExpression()
 {
 	return this->postFix;
 }
 
-std::string InfixToPostFixConverter::getPostFixResult()
+string InfixToPostFixConverter::getPostFixResult()
 {
 	return this->postFixResult;
 }
 
-std::string InfixToPostFixConverter::getErrorMessage()
+string InfixToPostFixConverter::getErrorMessage()
 {
 	return this->errorMessage;
 }
@@ -109,10 +109,16 @@ bool InfixToPostFixConverter::didSemanticErrorHappen()
 	return this->semanticError;
 }
 
+auto KeyGenerator() {
+
+	int arithmeticOperator = 2 % sizeof(Token);
+	return arithmeticOperator;
+}
+
 Token InfixToPostFixConverter::operateTokens(Token n1, Token n2, char arithmeticOperator)
 {
 	Token newT;
-	int casty = 0, power = 0;
+	int casty = 0, power = 0, modulus = 0;
 	float powerf = 0;
 
 	if (n1.getType() == "float" || n2.getType() == "float") {
@@ -181,6 +187,7 @@ Token InfixToPostFixConverter::operateTokens(Token n1, Token n2, char arithmetic
 			break;
 
 		case '%':
+			modulus = i1 % i2;
 			newT = Token(i1 % i2);
 			break;
 
@@ -350,7 +357,7 @@ void InfixToPostFixConverter::tokenizeInfixString()
 {	
 	vector<string> untokenize;
 	string variablesTypesFoundFromInput;
-	std::regex words_regex("[0-9]?([0-9]*[.])?[0-9]+|[\\[\\]\\^\\-\\+\\\\\(\\)\\/\\*]"); 
+	std::regex words_regex("[0-9]?([0-9]*[.])?[0-9]+|[\\%\\[\\]\\^\\-\\+\\\\\(\\)\\/\\*]"); 
 	auto words_begin = std::sregex_iterator(infix.begin(), infix.end(), words_regex);
 	auto words_end = std::sregex_iterator();
 
