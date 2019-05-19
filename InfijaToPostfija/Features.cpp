@@ -57,7 +57,20 @@
 
 	3. Strongly type enums
 
+	enum struct Priority -> Ubicacion: Parser.h
 
+	4. Palabra reservada default
+
+	Token() = default; Ubicacion -> InfixToPostFixConverter.h
+
+	5. In class initialization
+
+	private:
+		any value;
+		std::string strValue = "";
+		int priority = 0; Ubicacion -> InfixToPostFixConverter.h
+
+	Si lo hicieramos esto mismo anterior en c++ 11 se quejaria el compilador
 
 
 

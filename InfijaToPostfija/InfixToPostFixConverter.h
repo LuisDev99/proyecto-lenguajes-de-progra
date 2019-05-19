@@ -11,9 +11,7 @@ using namespace std;
 struct Token {
 
 
-	Token() : priority(0) {
-
-	}
+	Token() = default;
 
 	Token(int _value) : priority(0) {
 		value = _value;
@@ -68,8 +66,8 @@ struct Token {
 	
 private:
 	any value;
-	std::string strValue;
-	int priority;
+	std::string strValue = "";
+	int priority = 0;
 };
 
 
@@ -100,11 +98,11 @@ public:
 	void evaluatePostFix();
 
 private:
-	bool semanticError;
+	bool semanticError = false;
 
-	std::string errorMessage;
-	std::string postFix, postFixResult;
-	std::string infix;
+	std::string errorMessage = "";
+	std::string postFix ="", postFixResult="";
+	std::string infix ="";
 	std::vector<Token> tokens;
 	std::vector<Token> postFixVector;
 

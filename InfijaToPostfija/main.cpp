@@ -33,6 +33,8 @@ void main() {
 		if (parser.anErrorOccurred()) {
 
 			Parser::printColoredMessage(parser.getErrorMessage(), RED);
+
+			cout << " \n\t\t =============  Hubo Fallo ==================\n\n";
 			continue;
 		}
 
