@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "InfixToPostFixConverter.h"
 
 
 using namespace std;
@@ -35,13 +36,16 @@ void Parser::getPostFixResult()
 {
 	string userInputWarning = checkUserInput();
 
-	/* If the user input doesn't satisfies the validations,
-	   set the private variable result equal to the error message */
+	/* If the user input doesn't satisfies the validations, set the private variable result equal to the error message */
 	if (userInputWarning != "Good Input") {
 		cout << "\nIngreso mal la expresion! Intente de nuevo :D\n\n";
 		setResult(userInputWarning);
 		return;
 	}
+
+	InfixToPostFixConverter converter(this->input);
+
+	cout << "Resultado total postfijo: " << converter.getPostFixExpression() << "\n\n";
 
 	this->result = "the arithmethic operation answer";
 }
@@ -53,6 +57,8 @@ void Parser::setResult(std::string _result)
 
 std::string Parser::checkUserInput()
 {
+
+	//TODO: 3+13+1+3()
 
 	/*Returns "Good Input" if the input satisfies every validation*/
 
@@ -162,7 +168,7 @@ bool Parser::isCorrectInfixNotation()
 	 * If true, then the expression (the input) is infix
 	 */
 
-	if (isArithmeticOperand(input[0]) && isArithmeticOperand(input[input.size() - 1])) {
+	if (isArithmeticOperand(input[0]) || isArithmeticOperand(input[input.size() - 1])) {
 		return false;
 	}
 
@@ -180,7 +186,7 @@ bool Parser::isCorrectInfixNotation()
 
 			}
 
-		// operator should have a number to its left side side -> ( + 4) WRONG!
+		// operator NEEDS to have a number to its left side side -> ( + 4) WRONG!
 
 		/* Examples that this verifies: (+4), +4, -4*/
 
@@ -188,16 +194,14 @@ bool Parser::isCorrectInfixNotation()
 		bool b2 = input[i - 1] == ']';
 		bool b3 = isdigit(input[i - 1]);
 
-		if (b3)
+		if (b3) // If an arithmetic operand is found and a digit is in its left side, then the input is good, so continue evaluating
 			continue;
 
-		bool b4 = (b1 || b2);
+		bool b4 = (b1 || b2); // If an arithmetic operand is found and the character behind isnt a closing parenthesis or closing curly bracket, then the input is bad
 
 
 		if ( !b4 )
 			return false;
-
-
 
 		}
 	}

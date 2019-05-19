@@ -35,12 +35,16 @@
 
 	C++ 14:
 
+	auto return type
 
 
 
+	c++ 17
 
-
-
+	objeto any -> Ubicacion: InfixToPostFixConverter.h
+	boost lexical_cast -> Ubicacion: InfixToPostFixConverter.cpp
+	any any_cast -> el mismo archivo
+	boost range for each -> Ubicacion: InfixToPostFixConverter.cpp,  https://www.boost.org/doc/libs/1_68_0/libs/range/doc/html/index.html
 
 
 

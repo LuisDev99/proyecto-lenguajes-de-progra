@@ -2,6 +2,15 @@
 
 #include <string>
 #include <vector>
+
+enum Priority
+{
+	Highest = 4,  //
+	High = 3, // % * /
+	Low = 2,  // + - 
+	Lowest = 1
+};
+
 class Parser
 {
 public:
@@ -10,6 +19,9 @@ public:
 	~Parser();
 
 	std::string getResult();
+
+	static bool isArithmeticOperand(char str);
+	static bool isValidOperand(char str);
 	
 
 private:
@@ -24,8 +36,6 @@ private:
 	void setResult(std::string _result);
 
 	bool hasIllegalChar();
-	bool isValidOperand(char str);
-	bool isArithmeticOperand(char str);
 	bool isOperandComplete(char leftOperand, char rightOperand);
 	bool isCorrectInfixNotation();
 
