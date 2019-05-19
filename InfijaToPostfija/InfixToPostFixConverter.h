@@ -96,6 +96,8 @@ public:
 	void evaluatePostFix();
 
 private:
+	bool semanticErrorOccured;
+
 	std::string postFix;
 	std::string infix;
 	std::vector<Token> tokens;

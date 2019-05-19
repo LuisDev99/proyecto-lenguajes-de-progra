@@ -170,6 +170,7 @@ Token InfixToPostFixConverter::operateTokens(Token n1, Token n2, char arithmetic
 			break;
 
 		case '/':
+
 			newT = Token(i1 / i2);
 			break;
 
@@ -222,6 +223,10 @@ void InfixToPostFixConverter::convertInfixToPostFix()
 {
 
 	tokenizeInfixString(); 
+
+	if (semanticErrorOccured == true) {
+		return;
+	}
 
 
 	/* Following the algorithm mention here: https://www.includehelp.com/c/infix-to-postfix-conversion-using-stack-with-c-program.aspx */
@@ -381,4 +386,40 @@ void InfixToPostFixConverter::tokenizeInfixString()
 	}
 
 	cout << printer << endl;
+
+	for (int i = 0; i < untokenize.size(); i++) {
+
+		if (i == 0 || i == (untokenize.size() - 1))
+			continue;
+
+		switch (untokenize[i][0]) {
+
+		case '(': case '[':
+			if (isdigit(untokenize[i - 1][0])) {
+				cout << "Error semantico: Un digito que esta seguido de un parentesis o corchete se ha encontrado" << endl;
+				semanticErrorOccured = true;
+				return;
+			}
+			break;
+
+
+		case ')': case ']':
+			if (isdigit(untokenize[i + 1][0])) {
+				cout << "Error semantico: Un parentesis o corchete que esta seguido de un digito se ha encontrado" << endl;
+				semanticErrorOccured = true;
+				return;
+			}
+			break;
+
+		}
+
+	}
+
+
+	semanticErrorOccured = false;
 }
+
+
+//TODO:
+//Para finalizar las validaciones, en el vector untokenize, ahi se puede verificar las ultimas condiciones
+// ejemplo -> (3) MALO! 4+(4)
