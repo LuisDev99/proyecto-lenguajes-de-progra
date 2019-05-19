@@ -84,10 +84,16 @@ public:
 	std::string getPostFixExpression();
 
 	char getTokenChar(Token t);
+	float getTokenFloat(Token t);
+	int getTokenInt(Token t);
 
-	void printStack(std::vector<Token> stacky);
+	Token operateTokens(Token n1, Token n2, char arithmeticOperator);
+
+	void printStackBeauty(std::vector<Token> stacky);
 	void convertInfixToPostFix();
 	void printToken(Token t);
+
+	void evaluatePostFix();
 
 private:
 	std::string postFix;

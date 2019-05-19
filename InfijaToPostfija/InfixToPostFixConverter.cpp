@@ -7,6 +7,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/range/adaptor/reversed.hpp>
+#include <math.h>
 #include "Parser.h"
 
 InfixToPostFixConverter::InfixToPostFixConverter()
@@ -45,12 +46,154 @@ void InfixToPostFixConverter::printToken(Token t)
 	cout << t.getType() << ": " <<str << endl;
 }
 
+void InfixToPostFixConverter::evaluatePostFix()
+{
+
+	vector<Token> results;
+
+	for (int i = 0; i < postFixVector.size(); i++) {
+
+		if (postFixVector[i].getType() == "char") { 
+
+			string arithmeticOperator;
+			arithmeticOperator.push_back(getTokenChar(postFixVector[i])); //Append a char to the string
+
+			Token n2 = results.back();
+			results.pop_back();
+
+			Token n1 = results.back();
+			results.pop_back();
+
+			Token result = operateTokens(n1, n2, arithmeticOperator[0]);
+			results.push_back(result);
+
+		} else {
+			results.push_back(postFixVector[i]);
+		}
+
+	}
+
+	
+	/*Token n2 = results.back();
+	results.pop_back();
+
+	Token n1 = results.back();
+	results.pop_back();
+
+	string arithmeticOperator;
+	arithmeticOperator.push_back(getTokenChar(postFixVector[postFixVector.size()-1]));
+
+	Token result = operateTokens(n1, n2, arithmeticOperator[0]);*/
+
+	cout << "El resultado es: " << results[0].to_string() << endl;
+}
+
 char InfixToPostFixConverter::getTokenChar(Token t)
 {
 	return any_cast<char>(t.getValue());
 }
 
-void InfixToPostFixConverter::printStack(std::vector<Token> stacky)
+float InfixToPostFixConverter::getTokenFloat(Token t)
+{
+	return any_cast<float>(t.getValue());
+}
+
+int InfixToPostFixConverter::getTokenInt(Token t)
+{
+	return any_cast<int>(t.getValue());
+}
+
+Token InfixToPostFixConverter::operateTokens(Token n1, Token n2, char arithmeticOperator)
+{
+	Token newT;
+	int casty = 0, power = 0;
+	float powerf = 0;
+
+	if (n1.getType() == "float" || n2.getType() == "float") {
+
+		float f1 = (n1.getType() == "float") ? getTokenFloat(n1) : (float)getTokenInt(n1); //If the token isnt a float, then make a cast
+		float f2 = (n2.getType() == "float") ? getTokenFloat(n2) : (float)getTokenInt(n2);
+
+		switch (arithmeticOperator) {
+
+		case '+':
+			newT = Token(f1 + f2);
+			break;
+
+		case '-':
+			newT = Token(f1 - f2);
+			break;
+
+		case '*':
+			newT = Token(f1 * f2);
+			break;
+
+		case '/':
+			newT = Token(f1 / f2);
+			break;
+
+		case '%':
+			casty = (int)f1 % (int)f2;
+			newT = Token((float)casty);
+			break;
+
+		case '^':
+			powerf = pow(f1, f2);
+			newT = Token(powerf);
+			break;
+
+		default:
+			newT = Token(0.0f);
+			break;
+		}
+
+		
+
+		
+	} else {
+
+		int i1 = getTokenInt(n1);
+		int i2 = getTokenInt(n2);
+
+		switch (arithmeticOperator) {
+
+		case '+':
+			newT = Token(i1 + i2);
+			break;
+
+		case '-':
+			newT = Token(i1 - i2);
+			break;
+
+		case '*':
+			newT = Token(i1 * i2);
+			break;
+
+		case '/':
+			newT = Token(i1 / i2);
+			break;
+
+		case '%':
+			newT = Token(i1 % i2);
+			break;
+
+		case '^':
+			power = pow(i1, i2);
+			newT = Token(power);
+			break;
+
+		default:
+			newT = Token(0.0f);
+			break;
+
+		}
+
+	}
+
+	return newT;
+}
+
+void InfixToPostFixConverter::printStackBeauty(std::vector<Token> stacky)
 {
 	string str = "";
 
@@ -126,14 +269,13 @@ void InfixToPostFixConverter::convertInfixToPostFix()
 					
 					string popItem;
 					postFix.push_back(getTokenChar(stacky.back()));
+					postFixVector.push_back(postFix.back());
 					postFix += ",";
-
-					if(getTokenChar(t) != ')')
-						postFixVector.push_back(t);
-
+			
 					stacky.pop_back();
 				}
 
+				
 				stacky.pop_back(); //Remove parenthesis
 
 			} else if (t.to_string() == "]") {
@@ -142,8 +284,8 @@ void InfixToPostFixConverter::convertInfixToPostFix()
 
 					string popItem;
 					postFix.push_back(getTokenChar(stacky.back()));
+					postFixVector.push_back(postFix.back());
 					postFix += ",";
-					postFixVector.push_back(t);
 					stacky.pop_back();
 				}
 
@@ -184,9 +326,11 @@ void InfixToPostFixConverter::convertInfixToPostFix()
 		cout << "Estado del Postfijo: " << postFix << endl;
 
 		cout << "Estado de la pila ->\n";
-		printStack(stacky);
+		printStackBeauty(stacky);
 
 	}
+
+	evaluatePostFix();
   
 	/*cout << postFix << endl;*/
 }
