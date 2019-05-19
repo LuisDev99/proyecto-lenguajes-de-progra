@@ -5,7 +5,7 @@
 #include <iostream>
 #include <any>
 #include "Parser.h"
-
+#include <Windows.h>
 using namespace std;
 
 struct Token {
@@ -82,10 +82,14 @@ public:
 
 
 	std::string getPostFixExpression();
+	std::string getPostFixResult();
+	std::string getErrorMessage();
 
 	char getTokenChar(Token t);
 	float getTokenFloat(Token t);
 	int getTokenInt(Token t);
+
+	bool didSemanticErrorHappen();
 
 	Token operateTokens(Token n1, Token n2, char arithmeticOperator);
 
@@ -96,9 +100,10 @@ public:
 	void evaluatePostFix();
 
 private:
-	bool semanticErrorOccured;
+	bool semanticError;
 
-	std::string postFix;
+	std::string errorMessage;
+	std::string postFix, postFixResult;
 	std::string infix;
 	std::vector<Token> tokens;
 	std::vector<Token> postFixVector;

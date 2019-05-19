@@ -2,7 +2,11 @@
 #include <sstream>
 #include <string>
 #include "Parser.h"
+#include <Windows.h>
 
+#define RED 12
+#define GREEN 10
+#define BLUE 9
 
 using namespace std;
 
@@ -21,11 +25,25 @@ void main() {
 
 		cout << " \n\t\t ============= Procedimiento ==================\n\n";
 
+		if (input == "()" || input == "[]") //Very special case that saves a lot of lifes
+			continue;
+
 		Parser parser{ input }; // C++11 Inicializador con { }
 
-		output = parser.getResult();
+		if (parser.anErrorOccurred()) {
 
-		cout << output <<endl;
+			Parser::printColoredMessage(parser.getErrorMessage(), RED);
+			continue;
+		}
+
+
+		cout << "Resultado total postfijo: "; 
+		Parser::printColoredMessage(parser.getPostFix(), GREEN);
+
+
+		cout << "\nEl resultado es: ";
+		Parser::printColoredMessage(parser.getResult(), BLUE);
+
 
 		cout << " \n\t\t =============      Fin      ==================\n\n";
 

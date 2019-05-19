@@ -3,11 +3,11 @@
 #include <iterator>
 #include <iostream>
 #include <string>
-#include <stack>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 #include <math.h>
+#include <Windows.h>
 #include "Parser.h"
 
 InfixToPostFixConverter::InfixToPostFixConverter()
@@ -17,6 +17,8 @@ InfixToPostFixConverter::InfixToPostFixConverter()
 InfixToPostFixConverter::InfixToPostFixConverter(std::string _infix)
 {
 	this->infix = _infix;
+	semanticError = false;
+
 	convertInfixToPostFix();
 	
 }
@@ -29,7 +31,16 @@ InfixToPostFixConverter::~InfixToPostFixConverter()
 std::string InfixToPostFixConverter::getPostFixExpression()
 {
 	return this->postFix;
-	stack<int> hi;
+}
+
+std::string InfixToPostFixConverter::getPostFixResult()
+{
+	return this->postFixResult;
+}
+
+std::string InfixToPostFixConverter::getErrorMessage()
+{
+	return this->errorMessage;
 }
 
 void InfixToPostFixConverter::printToken(Token t)
@@ -73,19 +84,9 @@ void InfixToPostFixConverter::evaluatePostFix()
 
 	}
 
-	
-	/*Token n2 = results.back();
-	results.pop_back();
+	this->postFixResult = results[0].to_string();
 
-	Token n1 = results.back();
-	results.pop_back();
-
-	string arithmeticOperator;
-	arithmeticOperator.push_back(getTokenChar(postFixVector[postFixVector.size()-1]));
-
-	Token result = operateTokens(n1, n2, arithmeticOperator[0]);*/
-
-	cout << "El resultado es: " << results[0].to_string() << endl;
+	//cout << "El resultado es: " << results[0].to_string() << endl;
 }
 
 char InfixToPostFixConverter::getTokenChar(Token t)
@@ -101,6 +102,11 @@ float InfixToPostFixConverter::getTokenFloat(Token t)
 int InfixToPostFixConverter::getTokenInt(Token t)
 {
 	return any_cast<int>(t.getValue());
+}
+
+bool InfixToPostFixConverter::didSemanticErrorHappen()
+{
+	return this->semanticError;
 }
 
 Token InfixToPostFixConverter::operateTokens(Token n1, Token n2, char arithmeticOperator)
@@ -199,7 +205,7 @@ void InfixToPostFixConverter::printStackBeauty(std::vector<Token> stacky)
 	string str = "";
 
 	if (stacky.empty()) {
-		cout << "Vacia!" << endl;
+		cout << "\t\t\tVacia!" << endl;
 		return;
 	}
 
@@ -208,12 +214,12 @@ void InfixToPostFixConverter::printStackBeauty(std::vector<Token> stacky)
 		string newStr;
 		newStr.push_back(getTokenChar(t));
 
-		str += "|              |\n";
-		str += "|              |\n";
-		str += "|              |\n";
-		str += "|        "+newStr+"     |\n";
-		str += "|              |\n";
-		str += "|______________|\n";
+		str += "\t\t\t|              |\n";
+		str += "\t\t\t|              |\n";
+		str += "\t\t\t|              |\n";
+		str += "\t\t\t|        "+newStr+"     |\n";
+		str += "\t\t\t|              |\n";
+		str += "\t\t\t|______________|\n";
 	}
 
 	cout << str << endl;
@@ -224,7 +230,7 @@ void InfixToPostFixConverter::convertInfixToPostFix()
 
 	tokenizeInfixString(); 
 
-	if (semanticErrorOccured == true) {
+	if (semanticError == true) {
 		return;
 	}
 
@@ -341,21 +347,20 @@ void InfixToPostFixConverter::convertInfixToPostFix()
 }
 
 void InfixToPostFixConverter::tokenizeInfixString()
-{
-
-	/* Separate every int or float or operator from the infix input into a single string using regular expression and store it in the vector untokenize */
-	
+{	
 	vector<string> untokenize;
-	string printer;
+	string variablesTypesFoundFromInput;
 	std::regex words_regex("[0-9]?([0-9]*[.])?[0-9]+|[\\[\\]\\^\\-\\+\\\\\(\\)\\/\\*]"); 
 	auto words_begin = std::sregex_iterator(infix.begin(), infix.end(), words_regex);
 	auto words_end = std::sregex_iterator();
+
+	/* Separate every int or float or operator from the infix input into a single string using regular expression and store it in the vector untokenize */
 
 	for (std::sregex_iterator i = words_begin; i != words_end; ++i) {
 		untokenize.push_back((*i).str());
 	}
 
-	printer = "Tipos encontrados: ";
+	variablesTypesFoundFromInput = "Tipos encontrados: ";
 
 	/* Populate the tokens vector */
 
@@ -367,25 +372,27 @@ void InfixToPostFixConverter::tokenizeInfixString()
 
 			float n = boost::lexical_cast<float>(str);
 			newToken = Token(n);
-			printer += "Flotante ";
+			variablesTypesFoundFromInput += "Flotante ";
 
 		} else if (Parser::isValidOperand(str[0])) { //Checking if its a operator
 
 			newToken = Token(str[0]);
-			printer += "Operador" + str + " ";
+			variablesTypesFoundFromInput += "Operador" + str + " ";
 
 		} else { //Its a int
 
 			int n = boost::lexical_cast<int>(str);
 			newToken = Token(n);
-			printer += "Entero ";
+			variablesTypesFoundFromInput += "Entero ";
 
 		}
 
 		tokens.push_back(newToken);
 	}
 
-	cout << printer << endl;
+	Parser::printColoredMessage(variablesTypesFoundFromInput, 14); //Print the variables types in yellow
+
+	/* Check to see if there are more validation errors in the infix input */
 
 	for (int i = 0; i < untokenize.size(); i++) {
 
@@ -395,18 +402,39 @@ void InfixToPostFixConverter::tokenizeInfixString()
 		switch (untokenize[i][0]) {
 
 		case '(': case '[':
+
+			/* If a left parenthesis or curly bracket is found, then check the character before it isnt a digit */
+			/* If it is a digit, then it shouldnt be allowed to do so, example: 4(4) -> Wrong, it should be: 4*(4) */
 			if (isdigit(untokenize[i - 1][0])) {
-				cout << "Error semantico: Un digito que esta seguido de un parentesis o corchete se ha encontrado" << endl;
-				semanticErrorOccured = true;
+
+				this->errorMessage = "Error: Un digito que esta seguido de un parentesis o corchete se ha encontrado (esto es invalido, debe especificar un operador)\nEjemplo: 4(4) -> Incorrecto, Valido: 4*(4)";
+				semanticError = true;
 				return;
 			}
+
+
+			if (untokenize[i + 1][0] == ')') {
+				
+				this->errorMessage = "Error: Un parentesis vacio se ha encontrado";
+				semanticError = true;
+				return;
+			}
+
+			if (untokenize[i + 1][0] == ']') {
+
+				this->errorMessage = "Error: Un corchete vacio se ha encontrado";
+				semanticError = true;
+				return;
+			}
+
 			break;
 
-
+			/* If a right parenthesis or curly bracket is found, then check the character after it isnt a digit */
+			/* If it is a digit, then it shouldnt be allowed to do so, example: (4)4 -> Wrong, it should be: (4)*4 */
 		case ')': case ']':
 			if (isdigit(untokenize[i + 1][0])) {
-				cout << "Error semantico: Un parentesis o corchete que esta seguido de un digito se ha encontrado" << endl;
-				semanticErrorOccured = true;
+				this->errorMessage = "Error semantico: Un parentesis o corchete que esta seguido de un digito se ha encontrado(esto es invalido, debe especificar un operador)\nEjemplo: (4)4 -> Incorrecto, Valido: (4)*4";
+				semanticError = true;
 				return;
 			}
 			break;
@@ -416,7 +444,7 @@ void InfixToPostFixConverter::tokenizeInfixString()
 	}
 
 
-	semanticErrorOccured = false;
+	semanticError = false;
 }
 
 

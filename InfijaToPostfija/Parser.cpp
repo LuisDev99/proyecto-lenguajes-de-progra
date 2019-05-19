@@ -5,6 +5,9 @@
 #include <vector>
 #include "InfixToPostFixConverter.h"
 
+#define RED 12
+#define GREEN 10
+#define BLUE 9
 
 using namespace std;
 
@@ -18,6 +21,8 @@ Parser::Parser()
 Parser::Parser(std::string _input) : input(_input)
 {
 	this->result = "0";
+	anErrorHappen = false;
+	errorMessage = "";
 
 	getPostFixResult();
 
@@ -32,6 +37,21 @@ std::string Parser::getResult()
 	return this->result;
 }
 
+std::string Parser::getPostFix()
+{
+	return this->postFix;
+}
+
+std::string Parser::getErrorMessage()
+{
+	return this->errorMessage;
+}
+
+bool Parser::anErrorOccurred()
+{
+	return this->anErrorHappen;
+}
+
 void Parser::getPostFixResult()
 {
 	string userInputWarning = checkUserInput();
@@ -39,15 +59,22 @@ void Parser::getPostFixResult()
 	/* If the user input doesn't satisfies the validations, set the private variable result equal to the error message */
 	if (userInputWarning != "Good Input") {
 		cout << "\nIngreso mal la expresion! Intente de nuevo :D\n\n";
-		setResult(userInputWarning);
+		anErrorHappen = true;
+		this->errorMessage = userInputWarning;
 		return;
 	}
 
-	InfixToPostFixConverter converter(this->input);
+	InfixToPostFixConverter converter(this->input); //Converts the infix expression to postfix expression and also the answer to the expression
 
-	cout << "Resultado total postfijo: " << converter.getPostFixExpression() << "\n\n";
+	if (converter.didSemanticErrorHappen()) {
+		cout << "\nIngreso mal la expresion! Intente de nuevo :D\n\n";
+		anErrorHappen = true;
+		this->errorMessage = converter.getErrorMessage();
+		return;
+	}
 
-	this->result = "the arithmethic operation answer";
+	this->result = converter.getPostFixResult();
+	this->postFix = converter.getPostFixExpression();
 }
 
 void Parser::setResult(std::string _result)
@@ -117,6 +144,17 @@ bool Parser::isValidOperand(char str)
 		break;
 	}
 	return false;
+}
+
+void Parser::printColoredMessage(std::string message, int color)
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //Print with desired color
+	SetConsoleTextAttribute(hConsole, color);
+
+	cout << message << endl;
+
+	hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //Reset to White
+	SetConsoleTextAttribute(hConsole, 7);
 }
 
 bool Parser::isArithmeticOperand(char str) {

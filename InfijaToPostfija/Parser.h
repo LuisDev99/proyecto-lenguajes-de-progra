@@ -19,16 +19,26 @@ public:
 	~Parser();
 
 	std::string getResult();
+	std::string getPostFix();
+	std::string getErrorMessage();
+
+	bool anErrorOccurred();
 
 	static bool isArithmeticOperand(char str);
 	static bool isValidOperand(char str);
+
+	static void printColoredMessage(std::string message, int color);
 	
 
 private:
 	std::string input;
 	std::string result;
+	std::string postFix;
+	std::string errorMessage;
 	std::vector<std::string> stack;
 	std::vector<std::string> results;
+
+	bool anErrorHappen;
 
 
 	std::string checkUserInput();
