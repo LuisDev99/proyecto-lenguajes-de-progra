@@ -87,7 +87,7 @@ public:
 	float getTokenFloat(Token t);
 	int getTokenInt(Token t);
 
-	bool didSemanticErrorHappen();
+	bool didSemanticErrorOcurred();
 
 	Token operateTokens(Token n1, Token n2, char arithmeticOperator);
 

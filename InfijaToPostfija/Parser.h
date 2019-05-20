@@ -22,7 +22,7 @@ public:
 	std::string getPostFix();
 	std::string getErrorMessage();
 
-	bool anErrorOccurred();
+	bool didErrorOccurred();
 
 	static bool isArithmeticOperand(char str);
 	static bool isValidOperand(char str);

@@ -25,12 +25,14 @@ void main() {
 
 		cout << " \n\t\t ============= Procedimiento ==================\n\n";
 
-		if (input == "()" || input == "[]") //Very special case that saves a lot of lifes
+		if (input == "()" || input == "[]" || input == ".") {//Very special case that saves a lot of lifes
+			cout << "Huh?? Intentando quebrar mi codigo??? ERROR! " << endl;
 			continue;
+		}
 
 		Parser parser{ input }; // C++11 Inicializador con { }
 
-		if (parser.anErrorOccurred()) {
+		if (parser.didErrorOccurred()) {
 
 			Parser::printColoredMessage(parser.getErrorMessage(), RED);
 

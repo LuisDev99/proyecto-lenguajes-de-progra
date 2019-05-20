@@ -47,7 +47,7 @@ std::string Parser::getErrorMessage()
 	return this->errorMessage;
 }
 
-bool Parser::anErrorOccurred()
+bool Parser::didErrorOccurred()
 {
 	return this->anErrorHappen;
 }
@@ -56,7 +56,7 @@ void Parser::getPostFixResult()
 {
 	string userInputWarning = checkUserInput();
 
-	/* If the user input doesn't satisfies the validations, set the private variable result equal to the error message */
+	/* If the user input doesn't satisfies the validations, set the private variable errorMessage equal to the error message */
 	if (userInputWarning != "Good Input") {
 		cout << "\nIngreso mal la expresion! Intente de nuevo :D\n\n";
 		anErrorHappen = true;
@@ -66,13 +66,15 @@ void Parser::getPostFixResult()
 
 	InfixToPostFixConverter converter(this->input); //Converts the infix expression to postfix expression and also the answer to the expression
 
-	if (converter.didSemanticErrorHappen()) {
+	/* If the user input doesn't satisfies the rest of validation cases, set the private variable errorMessage equal to the error message */
+	if (converter.didSemanticErrorOcurred()) {
 		cout << "\nIngreso mal la expresion! Intente de nuevo :D\n\n";
 		anErrorHappen = true;
 		this->errorMessage = converter.getErrorMessage();
 		return;
 	}
 
+	/* If everything went okay then yay :D */
 	this->result = converter.getPostFixResult();
 	this->postFix = converter.getPostFixExpression();
 }

@@ -104,7 +104,7 @@ int InfixToPostFixConverter::getTokenInt(Token t)
 	return any_cast<int>(t.getValue());
 }
 
-bool InfixToPostFixConverter::didSemanticErrorHappen()
+bool InfixToPostFixConverter::didSemanticErrorOcurred()
 {
 	return this->semanticError;
 }
@@ -258,12 +258,12 @@ void InfixToPostFixConverter::convertInfixToPostFix()
 
 		if (t.getType() == "int") { 
 
-			postFix += to_string(any_cast<int>(t.getValue()));
+			postFix += to_string(getTokenInt(t));
 			postFix += ",";
 			postFixVector.push_back(t);
 		}  else if (t.getType() == "float") {
 
-			postFix += to_string(any_cast<float>(t.getValue()));
+			postFix += to_string(getTokenFloat(t));
 			postFix += ",";
 			postFixVector.push_back(t);
 		} else { //if an operator is encountered
@@ -307,13 +307,14 @@ void InfixToPostFixConverter::convertInfixToPostFix()
 					stacky.pop_back();
 				}
 
-				stacky.pop_back(); //Remove parenthesis
+				stacky.pop_back(); //Remove curly bracket
 
 			} else {
 
 				// 4^2*3-3+8/4/(1+1)
 
-				/*.3.1 If the precedence of the scanned operator is greater than the precedence of the operator in the stack(or the stack is empty or the stack contains a ‘(‘), push it.
+				/*.3.1 If the precedence of the scanned operator is greater than the precedence
+				of the operator in the stack(or the stack is empty or the stack contains a ‘(‘), push it.
 					…..3.2 Else, Pop all the operators from the stack which are greater than or equal to in precedence than that of the scanned operator. After doing that Push the scanned operator to the stack. (If you encounter parenthesis while popping then stop there and push the scanned operator in the stack.) */
 		
 				if (t.getPriority() > stacky.back().getPriority()) {
@@ -403,8 +404,25 @@ void InfixToPostFixConverter::tokenizeInfixString()
 
 	for (int i = 0; i < untokenize.size(); i++) {
 
-		if (i == 0 || i == (untokenize.size() - 1))
+		if (i == 0 || i == (untokenize.size() - 1)) {
+
+			/* Check if the input has only this two cases -> (.) or [.], if true, mark it as error */
+
+			if (untokenize.size() == 2 && untokenize[0][0] == '(' && untokenize[1][0] == ')') {
+				this->errorMessage = "Error Letal: Se ha encontrado un \".\" por si solo, lo cual no es valido, debe de ir acompañado de un digito ";
+				semanticError = true;
+				return;
+			} 
+			
+			if (untokenize.size() == 2 && untokenize[0][0] == '[' && untokenize[1][0] == ']') {
+				this->errorMessage = "Error Letal: Se ha encontrado un \".\" por si solo, lo cual no es valido, debe de ir acompañado de un digito ";
+				semanticError = true;
+				return;
+			}
+
 			continue;
+		}
+			
 
 		switch (untokenize[i][0]) {
 
@@ -419,7 +437,7 @@ void InfixToPostFixConverter::tokenizeInfixString()
 				return;
 			}
 
-
+			/* If a left parenthesis is found and the next character is a right parenthesis, then this means that its an empty parenthesis () */
 			if (untokenize[i + 1][0] == ')') {
 				
 				this->errorMessage = "Error: Un parentesis vacio se ha encontrado";
@@ -427,6 +445,7 @@ void InfixToPostFixConverter::tokenizeInfixString()
 				return;
 			}
 
+			/* If a left curly bracket is found and the next character is a right curly bracket, then this means that its an empty parenthesis () */
 			if (untokenize[i + 1][0] == ']') {
 
 				this->errorMessage = "Error: Un corchete vacio se ha encontrado";
@@ -445,6 +464,12 @@ void InfixToPostFixConverter::tokenizeInfixString()
 				return;
 			}
 			break;
+
+		/*case '.':
+			this->errorMessage = "Error Letal: Se ha encontrado un \".\" por si solo, lo cual no es valido, debe de ir acompañado de un digito ";
+			semanticError = true;
+			return;
+			break;*/
 
 		}
 
