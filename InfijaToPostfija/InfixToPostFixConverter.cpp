@@ -62,10 +62,13 @@ void InfixToPostFixConverter::evaluatePostFix()
 
 	vector<Token> results;
 
+	cout << " \n\t\t ============= Haciend Calculo con el postijo ==================\n\n";
+
 	for (int i = 0; i < postFixVector.size(); i++) {
 
 		if (postFixVector[i].getType() == "char") { 
 
+			cout << "Operador!! " << endl;
 			string arithmeticOperator;
 			arithmeticOperator.push_back(getTokenChar(postFixVector[i])); //Append a char to the string
 
@@ -77,11 +80,13 @@ void InfixToPostFixConverter::evaluatePostFix()
 
 			Token result = operateTokens(n1, n2, arithmeticOperator[0]);
 			results.push_back(result);
-
+			printStackBeauty(results);
+			
 		} else {
 			results.push_back(postFixVector[i]);
+			printStackBeauty(results);
 		}
-
+		
 	}
 
 	this->postFixResult = results[0].to_string();
@@ -218,8 +223,8 @@ void InfixToPostFixConverter::printStackBeauty(std::vector<Token> stacky)
 
 	for (auto t : boost::adaptors::reverse(stacky)) {
 
-		string newStr;
-		newStr.push_back(getTokenChar(t));
+		string newStr = t.to_string();
+		//newStr.push_back(getTokenChar(t));
 
 		str += "\t\t\t|              |\n";
 		str += "\t\t\t|              |\n";
