@@ -8,10 +8,12 @@
 
 	1. Syntaxis de inicializacion
 	Parser parser{ input }; // C++11 Inicializador con { }  -> Ubicacion: en el main.cpp
+	Parser parser(input);
 
 	2. Deduccion dinamica de tipo de variable
 	auto leftOperandCounter = 0;  -> Ubicacion: en el parser.cpp
 	auto rightOperandCounter = 0; -> Ubicacion: en el parser.cpp
+	a
 
 	3. Expressiones lambda 
 	auto counter = [](string _input, char operand) {

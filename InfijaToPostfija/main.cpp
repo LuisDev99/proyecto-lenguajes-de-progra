@@ -3,6 +3,7 @@
 #include <string>
 #include "Parser.h"
 #include <Windows.h>
+#include "Test.h"
 
 #define RED 12
 #define GREEN 10
@@ -15,6 +16,8 @@ void main() {
 
 	int menu = 0;
 	string input= " ", output = " ";
+
+	Test::TestAllCases();
 	
 	do {
 		

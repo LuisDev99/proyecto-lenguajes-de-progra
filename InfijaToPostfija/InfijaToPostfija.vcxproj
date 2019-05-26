@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClInclude Include="InfixToPostFixConverter.h" />
     <ClInclude Include="Parser.h" />
+    <ClInclude Include="Test.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
